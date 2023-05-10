@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AuthWindow</class>
+ <widget class="QDialog" name="AuthWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLineEdit" name="name_le"/>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="pass_le"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="auth_button">
+     <property name="text">
+      <string>авторизация</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="reg_button">
+     <property name="text">
+      <string>регистрация</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
