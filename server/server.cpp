@@ -127,13 +127,13 @@ void Server::AutorizationRequest(QDataStream& in, QTcpSocket* socket) {
 void Server::RegistrationRequest(QDataStream& in, QTcpSocket* socket) {
   QString name, pass;
   in >> name >> pass;
-  int res = RegNewUser(name, pass);
+  quint8 res = RegNewUser(name, pass);
   if (res == Server::reg_ok) {
     clients_list_[name] = false;
     SetClientList();
     SendToClient(socket, " ", Server::reg_ok);
   } else {
-    SendToClient(socket, " ", Server::reg_not);
+    SendToClient(socket, " ", res);
   }
 }
 

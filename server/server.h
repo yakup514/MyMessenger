@@ -19,6 +19,7 @@ class Server : public QTcpServer {
   Server();
 
  private:
+  static const quint8 msg_ok = 0;
   static const quint8 auth_mes = 1;
   static const quint8 auth_ok = 10;
   static const quint8 auth_not = 11;

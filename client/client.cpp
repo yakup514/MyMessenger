@@ -98,13 +98,19 @@ void Client::SlotReadyRead() {
           msg_box.setText(
               "вы успешно зарегистрировались, нажмите на кнопку авторизация");
           msg_box.exec();
-        } else if (mess_type == Client::reg_not) {
+        } else if (mess_type == Client::client_alreday_exist_err) {
           QString tmp;
           in >> tmp;
           QMessageBox msg_box;
           msg_box.setText("имя клиента занято");
           msg_box.exec();
-        } else if (mess_type == Client::send_msg) {
+        } else if (mess_type == Client::file_err) {
+            QString tmp;
+            in >> tmp;
+            QMessageBox msg_box;
+            msg_box.setText("ошибка открытия файла");
+            msg_box.exec();
+          } else if (mess_type == Client::send_msg) {
           QString from, msg;
           in >> from >> msg;
           WriteMessageToHistory(msg, from, false);

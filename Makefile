@@ -2,9 +2,13 @@ all: install_server install_client
 	
 
 install_server:
-	mkdir server_app && cd server_app && cmake ../server .. && cmake . && sudo make install
+	mkdir -p build && mkdir -p app_serv \
+	&& cd build && cmake -DEXECUTABLE_OUTPUT_PATH="../app_serv" ../Server && cmake --build .
+	rm -rf build
 install_client:
-	mkdir client_app && cd client_app && cmake ../client .. && cmake . && sudo make install
+	mkdir -p build && mkdir -p app_cli \
+	&& cd build && cmake -DEXECUTABLE_OUTPUT_PATH="../app_cli" ../Client && cmake --build .
+	rm -rf build
 
 dvi:
 	doxygen Doxyfile
