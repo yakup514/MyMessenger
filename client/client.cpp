@@ -1,13 +1,14 @@
 #include "client.h"
-#include "ui_authwindow.h"
-#include "ui_mainwindow.h"
+
+#include <QCryptographicHash>
 #include <QFile>
 #include <QMessageBox>
 #include <QRegExp>
-#include <QCryptographicHash>
+
+#include "ui_authwindow.h"
+#include "ui_mainwindow.h"
 
 Client::Client() {
-
   mw = new MainWindow;
   socket_ = new QTcpSocket;
   mw->statusBar()->showMessage("disconnected");
@@ -35,7 +36,6 @@ Client::Client() {
 }
 
 void Client::SlotConnnectButtonClicked() {
-
   socket_->connectToHost(mw->ui->ip_le->text(),
                          mw->ui->port_le->text().toInt());
   mw->statusBar()->showMessage("connecting...");
@@ -59,9 +59,7 @@ void Client::SlotSendButtonClicked() {
   SetHistory();
 }
 
-void Client::SlotSocketConnected() {
-  aw->show();
-}
+void Client::SlotSocketConnected() { aw->show(); }
 
 void Client::SlotReadyRead() {
   QDataStream in(socket_);
@@ -159,9 +157,9 @@ void Client::GetClientsList(QDataStream &in) {
       is_online ? mw->ui->listWidget->item(ind++)->setForeground(Qt::green)
                 : mw->ui->listWidget->item(ind++)->setForeground(Qt::red);
       if (!buddy_name_.isNull() && buddy_name_ == name && !is_online) {
-          mw->ui->send_btn->setEnabled(false);
+        mw->ui->send_btn->setEnabled(false);
       } else if (!buddy_name_.isNull() && buddy_name_ == name && is_online) {
-          mw->ui->send_btn->setEnabled(true);
+        mw->ui->send_btn->setEnabled(true);
       }
     }
   }
@@ -175,7 +173,6 @@ bool Client::CheckName(const QString &name) {
 bool Client::CheckPass(const QString &pass) { return pass.size() > 3; }
 
 void Client::WriteMessageToHistory(QString msg, QString name, bool is_my_msg) {
-
   QFile file(my_name_ + "-" + name);
   if (file.open(QIODevice::Append | QIODevice::Text)) {
     QTextStream write_stream(&file);
@@ -209,7 +206,10 @@ void Client::SetHistory() {
 void Client::SlotAuthButtonClicked() {
   if (aw->ui->name_le->text().size() != 0) {
     my_name_ = aw->ui->name_le->text();
-    QString hash_pass = (QString)(QString(QCryptographicHash::hash(aw->ui->pass_le->text().toUtf8(),QCryptographicHash::Sha1).toHex()));
+    QString hash_pass = (QString)(QString(
+        QCryptographicHash::hash(aw->ui->pass_le->text().toUtf8(),
+                                 QCryptographicHash::Sha1)
+            .toHex()));
     SendToServer(hash_pass, Client::auth_mes);
   }
 }
@@ -217,14 +217,18 @@ void Client::SlotAuthButtonClicked() {
 void Client::SlotRegButtonClicked() {
   if (CheckName(aw->ui->name_le->text()) &&
       CheckPass(aw->ui->pass_le->text())) {
-    QString hash_pass = (QString)(QString(QCryptographicHash::hash(aw->ui->pass_le->text().toUtf8(),QCryptographicHash::Sha1).toHex()));
+    QString hash_pass = (QString)(QString(
+        QCryptographicHash::hash(aw->ui->pass_le->text().toUtf8(),
+                                 QCryptographicHash::Sha1)
+            .toHex()));
     my_name_ = aw->ui->name_le->text();
     SendToServer(hash_pass, Client::reg_mes);
   } else {
     QMessageBox msg_box;
-    msg_box.setText("некорректные данные:\n-имя должно содеражать латинские "
-                    "буквы и цифры и быть длиннее 3-х символов\n-пароль "
-                    "должен быть длиннее 3-х символов");
+    msg_box.setText(
+        "некорректные данные:\n-имя должно содеражать латинские "
+        "буквы и цифры и быть длиннее 3-х символов\n-пароль "
+        "должен быть длиннее 3-х символов");
     msg_box.exec();
   }
 }
@@ -235,9 +239,9 @@ void Client::SlotBuddyChoosed(QListWidgetItem *item) {
   mw->ui->send_btn->setEnabled(true);
   item->setBackground(Qt::white);
   if (clients_list_[buddy_name_]) {
-      mw->ui->send_btn->setEnabled(true);
+    mw->ui->send_btn->setEnabled(true);
   } else {
-      mw->ui->send_btn->setEnabled(false);
+    mw->ui->send_btn->setEnabled(false);
   }
 }
 

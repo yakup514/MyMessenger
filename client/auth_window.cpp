@@ -1,17 +1,10 @@
 #include "auth_window.h"
+
 #include "ui_authwindow.h"
 
-AuthWindow::AuthWindow(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::AuthWindow)
-{
-    ui->setupUi(this);
-
+AuthWindow::AuthWindow(QWidget *parent)
+    : QDialog(parent), ui(new Ui::AuthWindow) {
+  ui->setupUi(this);
 }
 
-AuthWindow::~AuthWindow()
-{
-    delete ui;
-}
-
-
+AuthWindow::~AuthWindow() { delete ui; }
