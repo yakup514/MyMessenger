@@ -6,6 +6,9 @@ install_server:
 install_client:
 	mkdir client_app && cd client_app && cmake ../client .. && cmake . && sudo make install
 
+dvi:
+	doxygen Doxyfile
+	open doc/html/index.html
 git:
 	git add client/*.cpp client/*.h client/*.txt
 	git add server/*.cpp server/*.h server/*.txt
