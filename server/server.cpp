@@ -8,15 +8,10 @@ Server::Server() {
     mw->show();
     MakeClientList();
     SetClientList();
+    mw->statusBar()->showMessage("disconnected");
+    connect(mw->ui->start_button, SIGNAL(clicked()), this, SLOT(SlotStartButtonClicked()));
 
-    for (auto& p : clients_list_) {
-        qDebug() << p.first << ' ' << p.second;
-    }
-    if (listen(QHostAddress::Any, 1234)) {
-        qDebug() << "start";
-    } else {
-        qDebug() << "error";
-    }
+
 
 
 }
@@ -130,7 +125,7 @@ void Server::AutorizationRequest(QDataStream &in, QTcpSocket* socket) {
     } else {
         SendToClient(socket, " ", Server::auth_not);
     }
-    qDebug() << res;
+
 }
 
 void Server::RegistrationRequest(QDataStream &in, QTcpSocket* socket) {
@@ -144,19 +139,18 @@ void Server::RegistrationRequest(QDataStream &in, QTcpSocket* socket) {
     } else {
         SendToClient(socket, " ", Server::reg_not);
     }
-    qDebug() << res;
 }
 
 void Server::SendClientsList(QTcpSocket* socket) {
     data_.clear();
     QDataStream out(&data_, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_6_4);
-    out << quint16(0) << Server::send_clients << (quint32)clients_list_.size();
+    out << uint(0) << Server::send_clients << (quint32)clients_list_.size();
     for (auto& p : clients_list_) {
         out << p.first << p.second;
     }
     out.device()->seek(0);
-    out <<quint16(data_.size() - sizeof(quint16));
+    out <<uint(data_.size() - sizeof(uint));
     socket->write(data_);
 }
 
@@ -164,9 +158,9 @@ void Server::SendToClient(QTcpSocket *socket, QString str, quint8 mess_type){
     data_.clear();
     QDataStream out(&data_, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_6_4);
-    out << quint16(0) << mess_type << str;
+    out << uint(0) << mess_type << str;
     out.device()->seek(0);
-    out <<quint16(data_.size() - sizeof(quint16));
+    out <<uint(data_.size() - sizeof(uint));
     socket->write(data_);
 }
 
@@ -174,9 +168,9 @@ void Server::SendMsgToClient(QTcpSocket *socket, QString from, QString msg) {
     data_.clear();
     QDataStream out(&data_, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_6_4);
-    out << quint16(0) << Server::send_msg << from<< msg;
+    out << uint(0) << Server::send_msg << from<< msg;
     out.device()->seek(0);
-    out <<quint16(data_.size() - sizeof(quint16));
+    out <<uint(data_.size() - sizeof(uint));
     socket->write(data_);
 }
 
@@ -188,8 +182,6 @@ void Server::incomingConnection(qintptr socket_descriptor) {
     connect(socket_, SIGNAL( readyRead()), this, SLOT(SlotReadyRead()));
     connect(socket_, SIGNAL(disconnected()), this, SLOT(SlotClientDisconected()));
     connect(socket_, SIGNAL(disconnected()), socket_, SLOT(deleteLater()));
-
-    qDebug() << "client connected" << socket_descriptor;
 }
 
 void Server::SlotReadyRead() {
@@ -215,9 +207,10 @@ void Server::SlotReadyRead() {
                 } else if (mess_type == Server::send_msg) {
                     QString from, to, msg;
                     in >> from >> to >> msg;
-                    if (names_to_sockets_.at(to)) {
+                    if (clients_list_[to]) {
                         SendMsgToClient(names_to_sockets_[to], from, msg);
                     }
+                    WriteMessageToHistory(msg, from, to);
                 }
                 next_block_size = 0;
             } else {
@@ -238,4 +231,28 @@ void Server::SlotClientDisconected() {
         SetClientList();
     }
 }
+
+void Server::SlotStartButtonClicked() {
+    if (listen(QHostAddress::Any, mw->ui->port_le->text().toUInt())) {
+        mw->statusBar()->showMessage("started");
+    } else {
+        mw->statusBar()->showMessage("error");
+    }
+    mw->ui->start_button->setEnabled(false);
+}
+
+
+void Server::WriteMessageToHistory(QString msg, QString from, QString to) {
+    QFile file(from + "-" + to);
+    if(file.open(QIODevice::Append| QIODevice::Text)) {
+        QTextStream write_stream(&file);
+            write_stream << from << ":" << msg<<"\n";
+        file.close();
+    }
+}
+
+
+
+
+
 

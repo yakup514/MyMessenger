@@ -41,16 +41,17 @@ private:
     QByteArray data_;
     void SendToServer(QString str, quint8 mess_type);
     void SendToClient(QString msg);
-    quint16 next_block_size = 0;
+    uint next_block_size = 0;
     QString my_name_;
     QString buddy_name_;
     bool is_auth = false;
     void GetClientsList(QDataStream& in);
     bool CheckName(const QString& name);
     bool CheckPass(const QString& pass);
-    int WriteMessageToHistory(QString msg, QString name, bool is_my_msg);
+    void WriteMessageToHistory(QString msg, QString name, bool is_my_msg);
     void SetHistory();
     std::unordered_map<QString, QListWidgetItem*> names_to_items_;
+    std::unordered_map<QString, bool> clients_list_;
 };
 
 #endif // CLIENT_H

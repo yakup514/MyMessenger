@@ -5,13 +5,23 @@
 #include <QTcpSocket>
 #include <unordered_map>
 #include <unordered_set>
-
+/*!
+ * Класс для работы с матрицами, реализована возможность арифметических
+ * операций, сравнения, базовых преобразований матриц. \brief Класс S21Matrix.
+ * \author Shelacor \version 1.0 \date Март 2022 года \param rows_ Количество
+ * строк в матрице. \param auth_mes Количество столбцов в матрице. \param matrix_
+ * Двумерный массив для хранения матрицы в памяти.
+ * \param ACCURACY 1e-7  Используемая точность при сравнении и вычислениях.
+ *
+ */
 class Server : public QTcpServer {
     Q_OBJECT
 public:
+    /**
+     * @brief конструктор ксласса
+     */
     Server();
-    QTcpSocket* socket_;
-    quint16 next_block_size = 0;
+
 private:
     static const quint8 auth_mes = 1;
     static const quint8 auth_ok = 10;
@@ -39,12 +49,17 @@ private:
     void SendClientsList(QTcpSocket* socket);
     void SendToClient(QTcpSocket* socket, QString str, quint8 mess_type);
     void SendMsgToClient(QTcpSocket *socket, QString from, QString msg);
+    void WriteMessageToHistory(QString msg, QString from, QString to);
+    uint next_block_size = 0;
+    QTcpSocket* socket_;
+
 
 
 private slots:
     void incomingConnection(qintptr socket_descriptor);
     void SlotReadyRead();
     void SlotClientDisconected();
+    void SlotStartButtonClicked();
 };
 
 #endif // SERVER_H
